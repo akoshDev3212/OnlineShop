@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f4f4f9;
+  }
+
+  .page-wrapper {
+    display: flex;
+    max-width: 1200px;
+    margin: 40px auto;
+    gap: 30px;
+  }
+
+  /* Chap menyu */
+  .side-menu {
+    width: 280px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    padding: 15px;
+  }
+
+  .side-menu h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #f4f4f9;
+    padding-bottom: 8px;
+  }
+
+  .side-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .side-menu li {
+    background: #f9fafc;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    padding: 12px 15px;
+    transition: 0.2s;
+    cursor: pointer;
+  }
+
+  .side-menu li:hover {
+    background: #e8f0fe;
+  }
+
+  .side-menu li.active {
+    background: #ffe066;
+    font-weight: 600;
+  }
+
+  /* O‘ng kontent */
+  .content-area {
+    flex: 1;
+    background: #fff;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  }
+
+  .content-area h1 {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .yellow-box {
+    background: #ffe066;
+    border-radius: 10px;
+    padding: 25px;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .payment-logos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin-top: 15px;
+  }
+
+  .payment-logos img {
+    width: 90px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .content-area ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .content-area ul li {
+    background: #f0f4ff;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .steps {
+    margin-top: 35px;
+  }
+
+  .steps h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .steps ol {
+    background: #fafafa;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .steps li {
+    margin-bottom: 6px;
+  }
+
+  a.back {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #007bff;
+  }
+
+  a.back:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="page-wrapper">
+  <!-- Chap menyu -->
+  <div class="side-menu">
+    <h3>Ma’lumotlar</h3>
+    <ul>
+      <li class="active">To‘lov usullari</li>
+      <li>Yetkazib berish</li>
+      <li>Tovarlarga kafolat</li>
+      <li>Bonus tizimi</li>
+      <li>Kompaniya</li>
+      <li>Aloqa raqamlari</li>
+      <li>B2B savdosi</li>
+    </ul>
+  </div>
+
+  <!-- Kontent qismi -->
+  <div class="content-area">
+    <h1>To‘lov usullari</h1>
+
+    <div class="yellow-box">
+      <h2>Qulay to‘lov</h2>
+      <div class="payment-logos">
+        <img src="{% static 'img/payme.png' %}" alt="Payme">
+        <img src="{% static 'img/click.png' %}" alt="Click">
+        <img src="{% static 'img/uzcard.png' %}" alt="Uzcard">
+        <img src="{% static 'img/humo.png' %}" alt="Humo">
+      </div>
+    </div>
+
+    <ul>
+      <li>💳 Bank kartasi orqali (Visa / MasterCard / UzCard / Humo)</li>
+      <li>📱 Click yoki Payme orqali to‘lov</li>
+      <li>🏦 Naqd pul orqali (qabul punktida)</li>
+      <li>🚚 Yetkazib berilganda to‘lov (kuryerga)</li>
+    </ul>
+
+    <div class="steps">
+      <h2>Mahsulot xaridini amalga oshirish uchun:</h2>
+      <ol>
+        <li>Mobil ilovani yuklab oling yoki saytga kiring.</li>
+        <li>Ro‘yxatdan o‘ting.</li>
+        <li>Kerakli mahsulotni tanlang va “Xarid qilish” tugmasini bosing.</li>
+        <li>So‘ralgan ma’lumotlarni kiriting.</li>
+        <li>Siz uchun qulay usulda to‘lovni amalga oshiring.</li>
+      </ol>
+    </div>
+
+    <a href="/" class="back">⬅️ Orqaga qaytish</a>
+  </div>
+</div>
+{% endblock %}

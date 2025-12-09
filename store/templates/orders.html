@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #eef2f3, #ffffff);
+  }
+
+  .orders-container {
+    max-width: 1000px;
+    margin: 80px auto;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  .orders-header {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+
+  .orders-table th {
+    background-color: #f7f9fb;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .orders-table td {
+    vertical-align: middle;
+  }
+
+  .status {
+    font-weight: 600;
+    color: #ff9800;
+  }
+
+  .payed {
+    color: #28a745;
+    font-weight: 600;
+  }
+
+  .not-payed {
+    color: #dc3545;
+    font-weight: 600;
+  }
+
+  /* Mobil uchun responsive */
+  @media (max-width: 768px) {
+    .orders-header {
+      font-size: 1.2rem;
+      padding: 15px;
+    }
+
+    .orders-container {
+      margin: 40px 10px;
+      border-radius: 10px;
+    }
+
+    .orders-table {
+      font-size: 14px;
+    }
+
+    .orders-table th, .orders-table td {
+      padding: 8px;
+    }
+  }
+</style>
+
+<div class="orders-container">
+  {% if orders %}
+    <div class="orders-header">
+      My Recent Orders
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover text-center align-middle orders-table">
+        <thead>
+          <tr>
+            <th>Order Number</th>
+            <th>Products</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Payed</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td><span class="fw-semibold">#{{ order.id }}</span></td>
+            <td>
+              {% for order_product in order.order_products.all %}
+                <a href="#" class="text-decoration-none text-primary">
+                  {{ order_product }}
+                </a>{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </td>
+            <td>{{ order.total_price }} so‘m</td>
+            <td><span class="status">In consideration</span></td>
+            <td><span class="not-payed">Not payed</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="orders-header">
+      Nothing ordered yet 😕
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

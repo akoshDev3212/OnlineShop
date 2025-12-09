@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  body {
+    background: #f9f9f9;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* 🔹 Qidiruv paneli */
+  .search-section {
+    max-width: 700px;
+    margin: 60px auto 40px auto;
+    text-align: center;
+  }
+
+  .search-section form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 40px;
+    padding: 8px 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(8px);
+  }
+
+  .search-section input[type="text"] {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 10px 15px;
+    font-size: 16px;
+    outline: none;
+    color: #222;
+  }
+
+  .search-section button {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .search-section button:hover {
+    background: linear-gradient(135deg, #0062cc, #00aaff);
+    transform: translateY(-2px);
+  }
+
+  /* 🔹 Natijalar grid */
+  .product-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px;
+  }
+
+  .section-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #333;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+  }
+
+  .product-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  }
+
+  .product-card img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+  }
+
+  .product-info {
+    padding: 15px;
+    text-align: center;
+  }
+
+  .product-info h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 8px;
+  }
+
+  .product-info p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+  }
+
+  .price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .detail-btn,
+  .add-btn {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .detail-btn:hover,
+  .add-btn:hover {
+    background: linear-gradient(135deg, #0062cc, #00aaff);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .search-section form {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+</style>
+
+
+<!-- 🔹 Natijalar -->
+<div class="product-section">
+  <h2 class="section-title">🔎 Qidiruv natijalari</h2>
+
+  {% if products %}
+    <div class="product-grid">
+      {% for product in products %}
+        <div class="product-card">
+          <img src="{{ product.image.url }}" alt="{{ product.title }}">
+          <div class="product-info">
+            <h3>{{ product.title }}</h3>
+            <p>{{ product.description|truncatechars:120 }}</p>
+            <div class="price">${{ product.price }}</div>
+            <div class="action-buttons">
+              <a href="{% url 'store:products_detail' product.pk %}" class="detail-btn">Batafsil</a>
+              <a href="{% url 'store:store' %}?product={{ product.id }}" class="add-btn">Savatga qo‘shish</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="text-align:center; font-size:18px;">Hech narsa topilmadi 😔</p>
+  {% endif %}
+</div>
+
+{% endblock %}

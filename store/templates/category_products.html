@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+.product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 40px auto;
+    font-family: 'Poppins', sans-serif;
+}
+.product-card {
+    flex: 1 1 280px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.product-card img {
+    width: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.product-card img:hover {
+    transform: scale(1.05);
+}
+.product-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.product-info h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+}
+.product-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ff4d6d;
+}
+.product-desc {
+    font-size: 14px;
+    color: #555;
+}
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.action-buttons button {
+    flex: 1;
+    padding: 8px 0;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.add-cart { background-color: #4CAF50; color: #fff; }
+.add-cart:hover { background-color: #67d273; }
+.add-fav { background-color: #ff4d6d; color: #fff; }
+.add-fav:hover { background-color: #ff758f; }
+
+@media(max-width:900px){
+    .product-grid { flex-direction: column; gap: 20px; }
+}
+</style>
+
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+
+        <!-- Mahsulot rasmi -->
+        {% if product.image %}
+            <a href="{% url 'store:products_detail' product.id %}">
+                <img src="{{ product.image.url }}" alt="{{ product.title }}">
+            </a>
+        {% else %}
+            <a href="{% url 'store:products_detail' product.id %}">
+                <img src="{% static 'images/no-image.png' %}" alt="No image">
+            </a>
+        {% endif %}
+
+        <div class="product-info">
+            <h3>{{ product.title }}</h3>
+            <div class="product-price">{{ product.price }} so‘m</div>
+            <div class="product-desc">{{ product.snippet|default:"Mahsulot tavsifi mavjud emas." }}</div>
+
+            <div class="action-buttons">
+                <!-- Mahsulot detail sahifaga link -->
+                {% if product.id %}
+                <a href="{% url 'store:products_detail' product.id %}">
+                    <button class="add-cart">➕ Savatga qo‘shish</button>
+                </a>
+                {% else %}
+                <button class="add-cart" disabled>➕ Savatga qo‘shish</button>
+                {% endif %}
+
+                <!-- Sevimlilarga qo‘shish -->
+                {% if product.id %}
+                <a href="{% url 'store:add_favorite' product.id %}">
+                    <button class="add-fav">🧡 Sevimlilarga qo‘shish</button>
+                </a>
+                {% else %}
+                <button class="add-fav" disabled>🧡 Sevimlilarga qo‘shish</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

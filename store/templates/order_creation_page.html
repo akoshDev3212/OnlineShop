@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f9fafc;
+}
+
+/* Container */
+.checkout-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+/* Left Column */
+.checkout-left {
+  flex: 1 1 60%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  padding: 25px 30px;
+}
+
+/* Right Column */
+.checkout-right {
+  flex: 1 1 35%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  padding: 25px 30px;
+  height: fit-content;
+}
+
+/* Section titles */
+.section-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Input styles */
+.field {
+  margin-bottom: 15px;
+}
+.field label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #444;
+  margin-bottom: 5px;
+  display: block;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+.field input:focus, .field select:focus {
+  border-color: #f9b233;
+  outline: none;
+}
+
+/* Delivery buttons */
+.delivery-options {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+.delivery-option {
+  flex: 1;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s;
+}
+.delivery-option.active {
+  border-color: #f9b233;
+  background: #fff6e4;
+  color: #111;
+}
+
+/* Payment methods */
+.payment-methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.payment-method {
+  flex: 1 1 45%;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  text-align: center;
+  padding: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.payment-method.active {
+  border-color: #f9b233;
+  background: #fff6e4;
+}
+
+/* Order summary */
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+.order-item img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.order-item .details {
+  flex-grow: 1;
+}
+.order-item .name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.order-item .price {
+  color: #222;
+  font-weight: 500;
+}
+.total-box {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 15px;
+  color: #111;
+}
+
+/* Checkout button */
+.checkout-btn {
+  background: #f9b233;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  width: 100%;
+  padding: 15px 0;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: 0.3s;
+}
+.checkout-btn:hover {
+  background: #e0ac13;
+}
+</style>
+
+<div class="checkout-page">
+  
+  <!-- Left Column -->
+  <div class="checkout-left">
+    <div class="section-title">1. Sizning ma'lumotlaringiz</div>
+    <form method="post" action="{% url 'store:create_order' %}">
+      {% csrf_token %}
+      
+      <!-- Address -->
+      <div class="field">
+        <label for="id_address">Manzil</label>
+        <input type="text" name="address" id="id_address" placeholder="Masalan, Yunusobod 13-kvartal" required>
+      </div>
+
+      <!-- Phone -->
+      <div class="field">
+        <label for="id_phone">Tel raqam</label>
+        <input type="text" name="phone" id="id_phone" placeholder="+998 90 123 45 67" required>
+      </div>
+
+      <div class="section-title" style="margin-top:25px;">2. Qabul qilish usuli</div>
+      <div class="delivery-options">
+        <div class="delivery-option active">Yetkazib berish</div>
+        <div class="delivery-option">Do‘kondan olib ketish</div>
+      </div>
+
+      <div class="field">
+        <label>Viloyat</label>
+        <select name="region">
+          <option>Toshkent shahri</option>
+          <option>Andijon</option>
+          <option>Farg‘ona</option>
+        </select>
+      </div>
+
+      <div class="section-title" style="margin-top:25px;">3. To‘lov usulini tanlang</div>
+      <div class="payment-methods">
+        <div class="payment-method active">Payme</div>
+        <div class="payment-method">Click</div>
+        <div class="payment-method">Onlayn karta orqali</div>
+        <div class="payment-method">Qabul qilinganda</div>
+        <div class="payment-method">Muddati bilan to‘lov</div>
+      </div>
+
+      <button type="submit" class="checkout-btn">Xaridni rasmiylashtirish</button>
+    </form>
+  </div>
+
+  <!-- Right Column -->
+  <div class="checkout-right">
+    <div class="section-title">Sizning buyurtmangiz</div>
+    {% for item in cart_items %}
+    <div class="order-item">
+      <img src="{{ item.product.image.url }}" alt="">
+      <div class="details">
+        <div class="name">{{ item.product.name }}</div>
+        <div class="price">{{ item.product.price }} so‘m × {{ item.quantity }}</div>
+      </div>
+      <div class="price">{{ item.total_price }} so‘m</div>
+    </div>
+    {% endfor %}
+
+    <div class="total-box">
+      <span>Jami:</span>
+      <span>{{ total_price }} so‘m</span>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

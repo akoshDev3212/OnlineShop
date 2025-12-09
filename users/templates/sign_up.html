@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 90vh; background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+  <div class="card shadow-lg p-4" style="width: 360px; border-radius: 18px; border: none;">
+    <h3 class="text-center mb-3 fw-bold" style="color:#212529;">📝 Sign up</h3>
+
+    <form method="post" enctype="multipart/form-data" class="site-form">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-2">
+          <label for="{{ field.id_for_label }}" class="form-label fw-semibold small">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" 
+              class="btn w-100 py-2 fw-semibold"
+              style="background: linear-gradient(90deg, #0d6efd, #6610f2); color:white; border-radius: 25px; transition: 0.3s; font-size: 0.95rem;">
+        Sign up
+      </button>
+    </form>
+
+    <p class="text-center mt-3 mb-0 small">
+      Already have an account?
+      <a href="{% url 'users:sign_in' %}" style="text-decoration: none; font-weight: 600; color:#0d6efd;">
+        Log in
+      </a>
+    </p>
+  </div>
+</div>
+
+<!-- Inputlarni bootstrap class bilan chiroyli qilish -->
+<style>
+  input, select, textarea {
+    border-radius: 10px !important;
+    padding: 8px 12px !important;
+    border: 1px solid #ced4da !important;
+    font-size: 0.9rem !important;
+    transition: all 0.2s ease-in-out;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25) !important;
+  }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 16px rgba(13, 110, 253, 0.25);
+  }
+</style>
+{% endblock content %}

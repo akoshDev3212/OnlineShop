@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+body { font-family:'Poppins',sans-serif; background:#f7f7f7; margin:0; }
+
+.cart-container {
+    max-width:900px;
+    margin:50px auto;
+    background: #fff;
+    border-radius:16px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.3);
+    padding:30px;
+}
+
+.cart-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+.cart-header h2 { font-weight:700; color:#222; }
+
+.checkout-btn {
+    padding:12px 30px; background:#f9b233; border:none; border-radius:50px;
+    font-weight:700; cursor:pointer; color:#fff; transition:0.3s;
+    text-decoration:none;
+}
+.checkout-btn:hover { background:#e0ac13; }
+
+.cart-table { width:100%; border-collapse:collapse; text-align:center; }
+.cart-table th, .cart-table td { padding:15px; border-bottom:1px solid #eee; }
+.cart-table th { background:#f1f1f1; font-weight:600; }
+.cart-table img { width:80px; height:80px; border-radius:10px; }
+
+.quantity-box {
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:center;
+}
+
+.quantity-btn img {
+    width:22px;
+    height:22px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.quantity-btn img:hover {
+    transform:scale(1.15);
+}
+
+.delete-btn {
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-size:1.2rem;
+    color:#ff4d6d;
+    transition:0.3s;
+}
+.delete-btn:hover { transform:scale(1.2); color:#ff758f; }
+
+.total-price {
+    text-align:right;
+    font-weight:700;
+    margin-top:15px;
+    font-size:1.1rem;
+}
+</style>
+
+<div class="cart-container">
+    <div class="cart-header">
+        <h2>🛒 Savatchangiz</h2>
+        <a class="checkout-btn" href="{% url 'store:create_order' %}">To‘lov →</a>
+    </div>
+
+    {% if cart_items %}
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Rasm</th>
+                <th>Mahsulot</th>
+                <th>Narxi</th>
+                <th>Miqdor</th>
+                <th>Jami</th>
+                <th>Amal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td><img src="{{ item.product.image.url }}" alt=""></td>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.price }} sum</td>
+
+                <td>
+                    <div class="quantity-box">
+
+                        <!-- PLUS -->
+                        <a class="quantity-btn" href="{% url 'store:edit_cart_item' item.id %}?action=add">
+                            <img src="{% static 'img/up-arrow.png' %}" alt="">
+                        </a>
+
+                        <strong>{{ item.quantity }}</strong>
+
+                        <!-- MINUS -->
+                        <a class="quantity-btn" href="{% url 'store:edit_cart_item' item.id %}?action=take">
+                            <img src="{% static 'img/down-arrow.png' %}" alt="">
+                        </a>
+
+                    </div>
+                </td>
+
+                <td>{{ item.total_price }} sum</td>
+
+                <td>
+                    <a href="{% url 'store:delete_cart_item' item.id %}" class="delete-btn">🗑️</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-price">Jami: {{ total_price }} sum</div>
+
+    {% else %}
+    <p style="text-align:center;">Savatcha bo‘sh 😢</p>
+    {% endif %}
+</div>
+
+{% endblock %}

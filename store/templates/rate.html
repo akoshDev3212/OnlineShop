@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(145deg, #f3f4f7, #ffffff);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .rate-wrapper {
+    max-width: 1250px;
+    margin: 60px auto;
+  }
+
+  /* ==== PRODUCT BOX ==== */
+  .product-box {
+    background: #fff;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    transition: 0.3s;
+  }
+  .product-box:hover {
+    transform: translateY(-3px);
+  }
+
+  .product-img img {
+    width: 100%;
+    border-radius: 16px;
+    object-fit: cover;
+  }
+
+  .tag-new {
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .tag-discount {
+    background: linear-gradient(45deg, #007bff, #00a2ff);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  /* ==== FORM ==== */
+  .rate-form .form-control,
+  .rate-form .form-select {
+    border-radius: 12px;
+    padding: 10px 14px;
+  }
+
+  .btn-submit {
+    background: linear-gradient(45deg, #28a745, #34ce57);
+    border: none;
+    padding: 10px 25px;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: 0.3s;
+    color: white;
+  }
+  .btn-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  }
+
+  .btn-back {
+    border-radius: 12px;
+    padding: 10px 25px;
+    font-weight: 600;
+  }
+
+  /* ==== REVIEW CARD ==== */
+  .review-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.06);
+    transition: 0.3s;
+  }
+  .review-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .review-avatar img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+  }
+
+  .rating-star {
+    color: #f8c10b;
+    font-size: 1.3rem;
+  }
+
+  @media (max-width: 768px) {
+    .rate-wrapper {
+      margin: 25px 10px;
+    }
+  }
+</style>
+
+
+<div class="rate-wrapper">
+
+  <div class="row g-4 align-items-start">
+
+    <!-- Product image -->
+    <div class="col-md-5">
+      <div class="product-box">
+        <div class="product-img">
+
+          {% if product.thumb %}
+              <img src="{{ product.thumb.url }}" alt="{{ product.title }}">
+          {% else %}
+              <img src="{% static 'img/no-image.png' %}" alt="No image">
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Product info + rate form -->
+    <div class="col-md-7">
+      <div class="product-box">
+
+        <h2 class="fw-bold">{{ product.title }}</h2>
+
+        <div class="my-3">
+          {% if product.is_new %}
+            <span class="tag-new me-2">🆕 Yangi</span>
+          {% endif %}
+          {% if product.is_discounted %}
+            <span class="tag-discount">💸 Chegirma</span>
+          {% endif %}
+        </div>
+
+        <p class="text-secondary">{{ product.description }}</p>
+
+        <!-- Rate form -->
+        <form method="post" action="{% url 'store:rate_product' product.pk %}" class="rate-form mt-4">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="fw-semibold">{{ field.label }}</label>
+              {{ field }}
+            </div>
+          {% endfor %}
+
+          <button class="btn-submit">⭐ Submit Rating</button>
+          <a href="{% url 'store:products_detail' product.pk %}" class="btn btn-outline-danger btn-back ms-2">
+            Back
+          </a>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <hr class="my-5">
+
+  <div class="text-center mb-4">
+    <h3 class="fw-bold">Clients Reviews</h3>
+  </div>
+
+  <!-- Reviews -->
+  {% if reviews %}
+    <div class="row g-4">
+      {% for review in reviews %}
+      <div class="col-md-6">
+        <div class="review-card h-100">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="review-avatar me-3">
+                <img src="https://bulma.io/images/placeholders/96x96.png" alt="">
+              </div>
+              <div>
+                <h5 class="mb-0">{{ review.user.first_name }}</h5>
+                <small class="text-muted">@{{ review.user.username }}</small>
+              </div>
+            </div>
+            <small class="text-muted">{{ review.date }}</small>
+          </div>
+
+          <p class="text-secondary mt-3">{{ review.text }}</p>
+
+          <div class="mt-2">
+            <span class="rating-star">⭐</span>
+            <strong>{{ review.rate }}</strong> / 5
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <p class="text-center text-muted fs-5">No reviews yet. Be the first 😊</p>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f2f4f8;
+    margin: 0;
+}
+
+.product-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.detail-wrapper {
+    display: flex;
+    gap: 35px;
+    flex-wrap: wrap;
+}
+
+/* MAIN IMAGE */
+.main-image img {
+    width: 450px;
+    height: 450px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    transition: 0.5s ease;
+}
+.main-image img:hover {
+    transform: scale(1.03);
+}
+
+/* MINI IMAGES */
+.product-images {
+    display: flex;
+    margin-top: 15px;
+    gap: 12px;
+}
+.product-images img {
+    width: 95px;
+    height: 95px;
+    border-radius: 10px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 2px solid transparent;
+}
+.product-images img:hover {
+    transform: scale(1.1);
+    border-color: #3498db;
+}
+
+/* PRODUCT INFO */
+.product-info {
+    flex: 1;
+    min-width: 330px;
+}
+.product-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.product-price {
+    font-size: 28px;
+    font-weight: 600;
+    color: #e74c3c;
+    margin-bottom: 15px;
+}
+.category {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* BUTTONS */
+.btn {
+    padding: 12px 25px;
+    border-radius: 12px;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+.btn-add-cart {
+    background: #27ae60;
+    color: #fff;
+}
+.btn-add-cart:hover {
+    background: #1e8d4d;
+}
+.btn-fav {
+    background: #f1c40f;
+    color: #fff;
+}
+.btn-fav:hover {
+    background: #d4a90d;
+}
+
+/* RATING */
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 20px 0;
+}
+.star {
+    font-size: 23px;
+    color: #ddd;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.star.active {
+    color: #f1c40f;
+}
+
+/* COMMENTS */
+.comments {
+    margin-top: 50px;
+}
+.comments h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+.comment {
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.comment-user {
+    font-weight: bold;
+    font-size: 16px;
+}
+.comment-time {
+    font-size: 12px;
+    color: #888;
+}
+
+/* LEAVE COMMENT */
+.comment-form {
+    margin-bottom: 25px;
+}
+textarea {
+    border: 1px solid #ddd;
+    padding: 12px;
+    width: 100%;
+    border-radius: 12px;
+    font-size: 15px;
+    resize: vertical;
+    margin-top: 10px;
+}
+.comment-form button {
+    margin-top: 10px;
+}
+</style>
+
+<div class="product-container">
+
+    <div class="detail-wrapper">
+
+        <!-- LEFT SIDE IMAGES -->
+        <div>
+            <div class="main-image">
+                <img id="mainImg" src="{{ product.image.url }}" alt="">
+            </div>
+
+            <div class="product-images">
+                {% if product.image %}<img src="{{ product.image.url }}" onclick="changeMain(this)">{% endif %}
+                {% if product.image2 %}<img src="{{ product.image2.url }}" onclick="changeMain(this)">{% endif %}
+                {% if product.image3 %}<img src="{{ product.image3.url }}" onclick="changeMain(this)">{% endif %}
+                {% if product.image4 %}<img src="{{ product.image4.url }}" onclick="changeMain(this)">{% endif %}
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE INFO -->
+        <div class="product-info">
+            <div class="product-title">{{ product.title }}</div>
+
+            <div class="product-price">{{ product.price }} UZS</div>
+
+            <div class="category">
+                Kategoriya:
+                {% if product.category %}
+                    {{ product.category.title }}
+                {% else %}
+                    Yo'q
+                {% endif %}
+            </div>
+
+            <!-- FAVORITE -->
+            {% if user.is_authenticated %}
+                {% if product.id not in favorite_ids %}
+                    <form action="{% url 'store:add_favorite' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-fav">♡ Favorite</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+
+            <!-- ADD TO CART -->
+            {% if user.is_authenticated %}
+            <form action="{% url 'store:store' %}?product={{ product.id }}" method="POST">
+                {% csrf_token %}
+                <button class="btn btn-add-cart">Savatchaga qo'shish</button>
+            </form>
+            {% endif %}
+
+            <!-- DESCRIPTION -->
+            <div style="margin-top:20px;">{{ product.description|linebreaks }}</div>
+
+            <!-- RATING -->
+            <div class="rating" id="rating-stars">
+                {% for i in "12345" %}
+                    <span class="star" data-value="{{ forloop.counter }}">★</span>
+                {% endfor %}
+                <span style="margin-left:10px;">({{ product.reviews.count }} sharh)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEAVE COMMENT FORM -->
+    {% if user.is_authenticated %}
+    <div class="comment-form">
+        <form action="{% url 'store:leave_comment' product.id %}" method="POST">
+            {% csrf_token %}
+            <textarea name="comment_text" rows="4" placeholder="Sharh qoldiring..." required></textarea>
+            <button class="btn btn-add-cart">Yuborish</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- COMMENTS LIST -->
+    <div class="comments">
+        <h3>Sharhlar ({{ product.comments.count }})</h3>
+
+        {% for comment in product.comments.all %}
+        <div class="comment">
+            <div class="comment-user">{{ comment.user.username }}</div>
+            <div>{{ comment.comment_text }}</div>
+            <div class="comment-time">{{ comment.created_at }}</div>
+        </div>
+        {% empty %}
+            <p>Hozircha sharh yo‘q.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+// Rasmni o'zgartirish
+function changeMain(img){
+    document.getElementById('mainImg').src = img.src;
+}
+
+// Yulduzlarni highlight qilish
+function highlightStars(rating){
+    const stars = document.querySelectorAll('#rating-stars .star');
+    stars.forEach((star, index) => {
+        if(index < rating){
+            star.classList.add('active');
+        } else {
+            star.classList.remove('active');
+        }
+    });
+}
+
+// O'rtacha ratingni olish va highlight qilish
+const avgRating = parseInt("{{ product.average_rating|default:0|floatformat:0 }}");
+highlightStars(avgRating);
+
+// User reyting qo'yishi mumkin
+const stars = document.querySelectorAll('#rating-stars .star');
+stars.forEach(star => {
+    star.addEventListener('click', () => {
+        const value = star.dataset.value;
+        highlightStars(parseInt(value));
+        console.log('User rating:', value);
+    });
+});
+
+// ===========================
+// AVTOMATIK SLIDER (3 SONIYA)
+// ===========================
+const mainImg = document.getElementById('mainImg');
+const productImages = document.querySelectorAll('.product-images img');
+let currentIndex = 0;
+
+function autoSlide(){
+    if(productImages.length > 0){
+        currentIndex = (currentIndex + 1) % productImages.length;
+        mainImg.src = productImages[currentIndex].src;
+    }
+}
+
+// Har 3 soniyada rasm o'zgaradi
+setInterval(autoSlide, 3000);
+</script>
+
+{% endblock %}
