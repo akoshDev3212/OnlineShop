@@ -3,7 +3,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 
 # O'zingiz nusxalab olgan tokeni shu yerga qo'ying
-TOKEN = "8958938811:AAGauDd6UyQ2AL_2JsMQ6q6O0pv4cOPHM80"
+TOKEN = "8958938811:AAGxwT_7E47PMMySyGtaEI-ho5nMdnj_ONM"
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
