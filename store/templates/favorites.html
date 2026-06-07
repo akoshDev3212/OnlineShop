@@ -3,123 +3,200 @@
 
 {% block content %}
 <style>
-body {
-  font-family:'Poppins', sans-serif;
-  background:#f5f6fa;
-  margin:0;
+body{
+font-family:'Poppins',sans-serif;
+background:#f6f7fb;
+margin:0;
 }
 
-.container {
-  max-width:1300px;
-  margin:40px auto;
-  padding:0 15px;
+.container{
+max-width:1400px;
+margin:20px auto;
+padding:0 12px;
 }
 
-h2 {
-  font-weight:700;
-  margin-bottom:30px;
-  color:#333;
+h2{
+font-size:28px;
+font-weight:800;
+margin-bottom:20px;
+color:#111827;
 }
 
-/* GRID 5 TA */
-.fav-grid {
-  display:grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap:22px;
+/* GRID */
+
+.fav-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
 }
 
-/* CARD STYLE */
-.card {
-  background:#fff;
-  border-radius:20px;
-  box-shadow:0 6px 25px rgba(0,0,0,0.08);
-  padding:12px;
-  transition:0.3s ease;
-  cursor:pointer;
-  position:relative;
-  overflow:hidden;
+/* CARD */
+
+.card{
+background:#fff;
+border-radius:18px;
+overflow:hidden;
+position:relative;
+box-shadow:0 4px 16px rgba(0,0,0,.06);
+transition:.3s;
 }
 
-.card:hover {
-  transform:translateY(-6px);
-  box-shadow:0 10px 30px rgba(0,0,0,0.18);
+.card:hover{
+transform:translateY(-4px);
 }
 
-.card img {
-  width:100%;
-  height:160px;
-  border-radius:14px;
-  object-fit:cover;
-  border:1px solid #e5e5e5;
+.card img{
+width:100%;
+height:150px;
+object-fit:contain;
+padding:10px;
+background:#fff;
 }
 
-/* DELETE BUTTON – ALWAYS VISIBLE */
-.delete-btn {
-  position:absolute;
-  top:10px;
-  right:10px;
-  background:#ff4d6d;
-  color:#fff;
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:18px;
-  font-weight:700;
-  text-decoration:none;
-  transition:0.25s;
-  box-shadow:0 4px 10px rgba(255,0,60,0.35);
+/* DELETE */
+
+.delete-btn{
+position:absolute;
+top:10px;
+right:10px;
+
+width:34px;
+height:34px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:#ff4d6d;
+color:#fff;
+
+border-radius:50%;
+
+font-size:18px;
+font-weight:700;
+
+text-decoration:none;
+
+z-index:5;
 }
 
-.delete-btn:hover {
-  background:#ff6f87;
-  transform:scale(1.1);
+.delete-btn:hover{
+transform:scale(1.08);
 }
 
-.card-title {
-  font-weight:600;
-  margin-top:12px;
-  font-size:15px;
-  color:#333;
-  text-align:center;
-  min-height:38px;
+/* INFO */
+
+.card-title{
+padding:0 12px;
+margin-top:5px;
+
+font-size:14px;
+font-weight:700;
+color:#111827;
+
+display:-webkit-box;
+-webkit-line-clamp:2;
+-webkit-box-orient:vertical;
+overflow:hidden;
+
+min-height:40px;
 }
 
-.card-price {
-  color:#ec407a;
-  font-weight:700;
-  font-size:16px;
-  text-align:center;
-  margin:8px 0;
+.card-price{
+padding:0 12px;
+margin-top:6px;
+
+font-size:18px;
+font-weight:800;
+
+color:#ff6b00;
 }
 
-/* CART ADD BUTTON */
-.cart-btn {
-  background:#4CAF50;
-  border:none;
-  color:white;
-  padding:10px 15px;
-  width:100%;
-  border-radius:10px;
-  font-size:14px;
-  cursor:pointer;
-  transition:0.3s;
-  font-weight:500;
-  margin-top:8px;
+/* BUTTON */
+
+.cart-btn{
+width:calc(100% - 24px);
+
+margin:12px;
+
+height:42px;
+
+border:none;
+border-radius:12px;
+
+background:#ff6b00;
+color:white;
+
+font-size:13px;
+font-weight:700;
+
+cursor:pointer;
+
+transition:.3s;
 }
 
-.cart-btn:hover {
-  background:#6cd36b;
-  transform:scale(1.02);
+.cart-btn:hover{
+background:#ff8124;
 }
 
-.empty {
-  text-align:center;
-  padding:100px 0;
-  color:#777;
-  font-size:18px;
+/* EMPTY */
+
+.empty{
+background:#fff;
+padding:60px 20px;
+border-radius:20px;
+text-align:center;
+font-size:18px;
+color:#6b7280;
+}
+
+/* TABLET */
+
+@media(max-width:768px){
+
+.fav-grid{
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+}
+
+.card img{
+height:130px;
+}
+
+.card-title{
+font-size:13px;
+}
+
+.card-price{
+font-size:16px;
+}
+}
+
+/* DESKTOP */
+
+@media(min-width:992px){
+
+.fav-grid{
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+}
+
+.card img{
+height:220px;
+}
+
+.card-title{
+font-size:17px;
+}
+
+.card-price{
+font-size:22px;
+}
+
+.cart-btn{
+height:46px;
+font-size:14px;
+}
 }
 </style>
 

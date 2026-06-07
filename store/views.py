@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.db.models import Q
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404 ,JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import (
     Products, Slide, SlideTovar, SlideBrand,
@@ -10,28 +10,28 @@ from .models import (
 from . import forms
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 
+@login_required
+def add_to_cart_ajax(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Products, pk=product_id)
+        cart_item, created = CartItem.objects.get_or_create(customer=request.user, product=product)
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+        return JsonResponse({'status': 'ok'})
+    return JsonResponse({'status': 'error'}, status=400)
 
+# 2. Tozalangan store funksiyasi
 def store(request):
-    product_id = request.GET.get('product')
     slides = Slide.objects.all()
     slidetovars = SlideTovar.objects.all()
     slidebrands = SlideBrand.objects.all()
     products = Products.objects.all()
     categories = Category.objects.all()
 
-    # Foydalanuvchining sevimlilari
     favorite_ids = []
     if request.user.is_authenticated:
         favorite_ids = Favorite.objects.filter(user=request.user).values_list('product_id', flat=True)
-
-    # Savatga qo‘shish logikasi
-    if product_id and request.user.is_authenticated:
-        product = get_object_or_404(Products, pk=product_id)
-        cart_item, created = CartItem.objects.get_or_create(customer=request.user, product=product)
-        if not created:
-            cart_item.quantity += 1
-            cart_item.save()
-        return redirect('store:store')
 
     return render(request, 'store.html', {
         'slides': slides,
@@ -214,3 +214,5 @@ def remove_favorite(request, pk):
 def favorites_page(request):
     favorites = Favorite.objects.filter(user=request.user).select_related("product")
     return render(request, "favorites.html", {"favorites": favorites})
+
+
