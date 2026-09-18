@@ -9,6 +9,18 @@ from .models import (
 )
 from . import forms
 from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.utils.http import url_has_allowed_host_and_scheme
+
+
+def _safe_referer_redirect(request, fallback):
+    """HTTP_REFERER'ga qaytishdan oldin uni tekshiradi — aks holda tashqi
+    sayt manzillariga yo'naltirilishi mumkin (open redirect zaifligi)."""
+    referer = request.META.get("HTTP_REFERER")
+    if referer and url_has_allowed_host_and_scheme(
+        url=referer, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return redirect(referer)
+    return redirect(fallback)
 
 @login_required
 def add_to_cart_ajax(request, product_id):
@@ -44,7 +56,7 @@ def store(request):
 
 
 def products_detail(request, pk):
-    product = Products.objects.get(pk=pk)
+    product = get_object_or_404(Products, pk=pk)
     favorite_ids = []
     if request.user.is_authenticated:
         favorite_ids = Favorite.objects.filter(user=request.user).values_list('product_id', flat=True)
@@ -79,41 +91,44 @@ def search_result(request):
     return render(request, 'search.html', {'products': products, 'query': query})
 
 
+@login_required
 def cart(request):
-    cart_items = CartItem.objects.filter(customer=request.user)
+    cart_items = CartItem.objects.filter(customer=request.user).select_related('product')
     total_price = sum(item.product.price * item.quantity for item in cart_items)
     return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price})
 
 
+@login_required
 def update_cart(request):
     if request.method == "POST":
-        # O'chirish tugmasi
+        # O'chirish tugmasi (faqat o'zining savatchasidagi elementni o'chira oladi)
         remove_id = request.POST.get('remove')
         if remove_id:
-            CartItem.objects.filter(id=remove_id).delete()
+            CartItem.objects.filter(id=remove_id, customer=request.user).delete()
             return redirect('store:cart')
 
-        # Miqdorlarni yangilash
+        # Miqdorlarni yangilash (faqat o'zining savatchasidagi elementlar)
         for key, value in request.POST.items():
             if key.startswith('quantity_'):
                 item_id = key.split('_')[1]
                 try:
-                    item = CartItem.objects.get(id=item_id)
+                    item = CartItem.objects.get(id=item_id, customer=request.user)
                     qty = int(value)
                     if qty <= 0:
                         item.delete()
                     else:
                         item.quantity = qty
                         item.save()
-                except CartItem.DoesNotExist:
+                except (CartItem.DoesNotExist, ValueError):
                     continue
         return redirect('store:cart')
 
     return redirect('store:cart')
 
 
+@login_required
 def edit_cart_item(request, pk):
-    cart_item = get_object_or_404(CartItem, pk=pk)
+    cart_item = get_object_or_404(CartItem, pk=pk, customer=request.user)
     action = request.GET.get('action')
     if action == 'take':
         if cart_item.quantity > 1:
@@ -127,8 +142,9 @@ def edit_cart_item(request, pk):
     return redirect('store:cart')
 
 
+@login_required
 def delete_cart_item(request, pk):
-    cart_item = get_object_or_404(CartItem, pk=pk)
+    cart_item = get_object_or_404(CartItem, pk=pk, customer=request.user)
     cart_item.delete()
     return redirect('store:cart')
 
@@ -200,14 +216,14 @@ def category_products(request, pk):
 def add_favorite(request, pk):
     product = get_object_or_404(Products, pk=pk)
     Favorite.objects.get_or_create(user=request.user, product=product)
-    return redirect(request.META.get("HTTP_REFERER", "store:store"))
+    return _safe_referer_redirect(request, "store:store")
 
 
 @login_required
 def remove_favorite(request, pk):
     fav = get_object_or_404(Favorite, pk=pk, user=request.user)
     fav.delete()
-    return redirect(request.META.get("HTTP_REFERER", "store:favorites_page"))
+    return _safe_referer_redirect(request, "store:favorites_page")
 
 
 @login_required

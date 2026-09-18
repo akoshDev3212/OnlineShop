@@ -12,6 +12,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,11 +27,39 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# Production'da SECRET_KEY albatta Render dashboard'ida environment variable
+# sifatida beriladi. Pastdagi qiymat faqat local development uchun fallback.
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-f0++a7-_*&l&yl_nl&)s=c8xqojc@x6d4+ljs3vgswep)14)8*')
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ['onlineshop-ism1.onrender.com', '127.0.0.1', 'localhost']
+# SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG endi environment variable orqali boshqariladi. Render'da DEBUG ni
+# o'rnatmasang (yoki "False" qilsang) production xavfsiz rejimda ishlaydi.
+# Local'da .env fayliga DEBUG=True qo'ysang, development rejimi ishlaydi.
+DEBUG = os.environ.get('DEBUG', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
+
+_default_hosts = ['onlineshop-ism1.onrender.com', '127.0.0.1', 'localhost']
+_extra_hosts = os.environ.get('ALLOWED_HOSTS', '')
+ALLOWED_HOSTS = _default_hosts + [h.strip() for h in _extra_hosts.split(',') if h.strip()]
+
+# Render "onrender.com" bepul domenidan ishlatilsa ham CSRF ishlashi uchun.
+CSRF_TRUSTED_ORIGINS = [
+    'https://onlineshop-ism1.onrender.com',
+    'https://*.onrender.com',
+] + [o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
+
+# Render load balancer HTTPS'ni proxy orqali uzatadi, shuning uchun Django'ga
+# so'rov aslida xavfsiz (https) ekanini shu header orqali bildiramiz.
+# Bu bo'lmasa CSRF/redirect va SECURE_SSL_REDIRECT noto'g'ri ishlaydi.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Production'da (DEBUG=False) xavfsizlik sozlamalarini yoqamiz, lekin local
+# development (DEBUG=True, http://127.0.0.1) buzilmasin uchun DEBUG'ga bog'liq.
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_HSTS_SECONDS = 60 * 60 * 24 * 7 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 
 
 # Application definition
@@ -73,13 +108,43 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+#
+# DIQQAT: Render'ning bepul (free) tarifida disk persistent emas — har bir
+# redeploy/restart'da fayl tizimi qayta tiklanadi, shuning uchun sqlite3
+# fayli (db.sqlite3) ham o'chib ketadi/eski holatga qaytadi. Bu productionda
+# ma'lumotlar yo'qolishiga olib keladi. Buning yechimi — Render'da Postgres
+# database yaratib, uning DATABASE_URL qiymatini environment variable
+# sifatida qo'shish (Render dashboard -> Environment). Agar DATABASE_URL
+# mavjud bo'lmasa, loyihalar sqlite3'ga fallback qiladi (local development
+# uchun xavfsiz, hech narsa buzilmaydi).
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+_database_url = os.environ.get('DATABASE_URL')
+
+if _database_url:
+    from urllib.parse import urlparse
+
+    _db = urlparse(_database_url)
+    _engine = 'django.db.backends.postgresql'
+    if _db.scheme in ('sqlite', 'sqlite3'):
+        _engine = 'django.db.backends.sqlite3'
+
+    DATABASES = {
+        'default': {
+            'ENGINE': _engine,
+            'NAME': _db.path.lstrip('/'),
+            'USER': _db.username or '',
+            'PASSWORD': _db.password or '',
+            'HOST': _db.hostname or '',
+            'PORT': _db.port or '',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -127,6 +192,10 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# DIQQAT: Render bepul tarifida disk persistent emas — foydalanuvchi
+# yuklagan (upload qilingan) media fayllar har bir redeploy/restart'da
+# yo'qolib turadi. Doimiy saqlash uchun Render Disk (pullik) yoki S3/Cloudinary
+# kabi tashqi storage ulash tavsiya etiladi.
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
