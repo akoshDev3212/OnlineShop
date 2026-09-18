@@ -1,54 +1,147 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="min-height: 90vh; background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
-  <div class="card shadow-lg p-4" style="width: 360px; border-radius: 18px; border: none;">
-    <h3 class="text-center mb-3 fw-bold" style="color:#212529;">📝 Sign up</h3>
+
+<style>
+/* === Background === */
+body {
+  background: linear-gradient(135deg, #f8f9fb, #eef1f4);
+  font-family: 'Poppins', sans-serif;
+}
+
+/* === Center Wrapper === */
+.login-wrapper {
+  width: 100%;
+  min-height: 88vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+}
+
+/* === Big Card === */
+.login-card {
+  width: 520px;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 40px 45px;
+  box-shadow: 0 15px 38px rgba(0, 0, 0, 0.12);
+  transition: 0.3s ease-in-out;
+  border: 1px solid #f1f1f1;
+}
+
+.login-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+}
+
+/* === Title === */
+.login-title {
+  font-weight: 700;
+  font-size: 30px;
+  text-align: center;
+  color: #252525;
+  margin-bottom: 22px;
+}
+
+/* === Fields === */
+.site-form label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.site-form .mb-3 {
+  margin-bottom: 16px;
+}
+
+.site-form input,
+.site-form select,
+.site-form textarea {
+  width: 100%;
+  padding: 15px 18px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #dbdbdb;
+  outline: none;
+  transition: 0.25s ease;
+  background: #fafafa;
+}
+
+.site-form input:focus,
+.site-form select:focus,
+.site-form textarea:focus {
+  border-color: #ff8c00;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 140, 0, 0.4);
+}
+
+/* === Submit Button === */
+.btn-submit {
+  width: 100%;
+  background: #ff8c00;
+  border: none;
+  padding: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: 0.28s ease;
+  color: white;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+.btn-submit:hover {
+  background: #ffa94d;
+  transform: translateY(-2px);
+}
+
+/* === Bottom Text === */
+.signup-text {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 15px;
+}
+
+.signup-text a {
+  color: #ff8c00;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.signup-text a:hover {
+  text-decoration: underline;
+}
+</style>
+
+<div class="login-wrapper">
+  <div class="login-card">
+
+    <h2 class="login-title">📝 Ro‘yxatdan o‘tish</h2>
 
     <form method="post" enctype="multipart/form-data" class="site-form">
       {% csrf_token %}
       {% for field in form %}
-        <div class="mb-2">
-          <label for="{{ field.id_for_label }}" class="form-label fw-semibold small">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <div class="text-danger small">{{ field.errors }}</div>
-          {% endif %}
-        </div>
+      <div class="mb-3">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="text-danger small">{{ field.errors }}</div>
+        {% endif %}
+      </div>
       {% endfor %}
 
-      <button type="submit" 
-              class="btn w-100 py-2 fw-semibold"
-              style="background: linear-gradient(90deg, #0d6efd, #6610f2); color:white; border-radius: 25px; transition: 0.3s; font-size: 0.95rem;">
-        Sign up
-      </button>
+      <button type="submit" class="btn-submit">Ro‘yxatdan o‘tish</button>
     </form>
 
-    <p class="text-center mt-3 mb-0 small">
-      Already have an account?
-      <a href="{% url 'users:sign_in' %}" style="text-decoration: none; font-weight: 600; color:#0d6efd;">
-        Log in
-      </a>
+    <p class="signup-text">Akkountingiz bormi?
+      <a href="{% url 'users:sign_in' %}">Kirish</a>
     </p>
+
   </div>
 </div>
 
-<!-- Inputlarni bootstrap class bilan chiroyli qilish -->
-<style>
-  input, select, textarea {
-    border-radius: 10px !important;
-    padding: 8px 12px !important;
-    border: 1px solid #ced4da !important;
-    font-size: 0.9rem !important;
-    transition: all 0.2s ease-in-out;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: #0d6efd !important;
-    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25) !important;
-  }
-  button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 16px rgba(13, 110, 253, 0.25);
-  }
-</style>
 {% endblock content %}

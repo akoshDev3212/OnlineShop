@@ -116,9 +116,13 @@ color:#ff6b00;
 border:1px solid #ffd2bf;
 }
 
-.add-cart:hover
+.add-cart:hover{
+background:var(--main-hover, #ff8124);
+}
 
-.add-fav:hover
+.add-fav:hover{
+background:#ffe4d3;
+}
 
 /* TABLET */
 
@@ -193,9 +197,8 @@ font-size:14px;
 
             <div class="action-buttons">
                 <!-- Mahsulot detail sahifaga link -->
-                <a href="{% url 'store:products_detail' product.id %}" class="product-card">
                 {% if product.id %}
-                <a href="{% url 'store:products_detail' product.id %}"></a>
+                <a href="{% url 'store:products_detail' product.id %}">
                     <button class="add-cart">➕ Savatga qo‘shish</button>
                 </a>
                 {% else %}

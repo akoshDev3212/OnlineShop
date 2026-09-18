@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Shop{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         *{
 margin:0;
@@ -213,7 +214,10 @@ color:#333;
 border-bottom:1px solid #f3f3f3;
 }
 
-.catalog-dropdown a:hover
+.catalog-dropdown a:hover{
+background:#fff6ee;
+color:var(--main);
+}
 
 /* MOBILE */
 
@@ -340,5 +344,6 @@ height:38px;
     catalogBtn.addEventListener('click', (e) => { e.stopPropagation(); catalogDropdown.classList.toggle('show'); });
     document.addEventListener('click', () => catalogDropdown.classList.remove('show'));
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
